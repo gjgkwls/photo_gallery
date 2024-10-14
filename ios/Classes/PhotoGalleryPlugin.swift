@@ -468,7 +468,7 @@ public class PhotoGalleryPlugin: NSObject, FlutterPlugin {
     let mimeType = self.extractMimeTypeFromAsset(asset: asset)
     let resource = self.extractResourceFromAsset(asset: asset)
     let size = self.extractSizeFromResource(resource: resource)
-    let orientation = self.toOrientationValue(orientation: asset.value(forKey: "orientation") as? UIImage.Orientation)
+    let orientation = self.toOrientationValue(asset: asset)
     return [
       "id": asset.localIdentifier,
       "filename": filename,
@@ -523,8 +523,11 @@ public class PhotoGalleryPlugin: NSObject, FlutterPlugin {
     }
   }
 
-  private func toOrientationValue(orientation: UIImage.Orientation?) -> Int {
-    guard let orientation = orientation else {
+  private func toOrientationValue(asset: PHAsset) -> Int {
+    if #available(iOS 18.0, *) {
+      return 0
+    }
+    guard let orientation = asset.value(forKey: "orientation") as? UIImage.Orientation else {
       return 0
     }
     switch orientation {
